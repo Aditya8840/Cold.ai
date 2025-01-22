@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 export const config = {
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,

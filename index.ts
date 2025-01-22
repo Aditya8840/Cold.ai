@@ -1,12 +1,13 @@
 import config from "./src/config";
 import express, { Request, Response, NextFunction } from "express";
 import logger from "./src/utils/logger";
+import routes from './src/routes';
 
 const server = express();
 const router = express.Router();
 const PORT = config.port;
 
-require('./src/routes')(router);
+routes(router);
 
 server.use('/api', router);
 

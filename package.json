@@ -12,8 +12,10 @@
   "description": "",
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/glob": "^8.1.0",
     "@types/node": "^22.10.7",
     "@types/passport": "^1.0.17",
+    "@types/passport-azure-ad": "^4.3.6",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-oauth2": "^1.4.17",
     "@types/winston": "^2.4.4",
@@ -22,15 +24,15 @@
   "dependencies": {
     "axios": "^1.7.9",
     "bullmq": "^5.35.0",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "glob": "^11.0.1",
+    "glob": "^7.1.4",
     "googleapis": "^144.0.0",
     "ioredis": "^5.4.2",
     "openai": "^4.80.0",
     "passport": "^0.7.0",
+    "passport-azure-ad": "^4.3.5",
     "passport-google-oauth20": "^2.0.0",
-    "passport-outlook": "^3.0.0",
-    "simple-oauth2": "^5.1.0",
     "winston": "^3.17.0"
   }
 }
