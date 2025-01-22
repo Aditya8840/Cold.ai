@@ -21,6 +21,7 @@ export const config = {
     port: Number(process.env.REDIS_PORT || '6379')
   },
   port: Number(process.env.PORT || '3000'),
+  session: process.env.SESSION_SECRET,
 };
 
 export default config;

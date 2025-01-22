@@ -1,7 +1,7 @@
 import { OIDCStrategy, VerifyCallback } from 'passport-azure-ad';
 import config from '../config';
 
-const initializeOutlookStrategy = (passport: any) => {
+const initializeAzureAdStrategy = (passport: any) => {
   passport.use(
     new OIDCStrategy(
       {
@@ -13,12 +13,12 @@ const initializeOutlookStrategy = (passport: any) => {
         responseType: 'code',
         responseMode: 'query',
         scope: [
-            'openid',
-            'profile',
-            'offline_access',
-            'https://outlook.office.com/Mail.Read',
-            'https://outlook.office.com/Mail.Send',
-            'User.Read'
+          'openid',
+          'profile',
+          'offline_access',
+          'https://graph.microsoft.com/Mail.Read',
+          'https://graph.microsoft.com/Mail.Send',
+          'User.Read'
         ],
         passReqToCallback: true,
       },
@@ -52,4 +52,4 @@ const initializeOutlookStrategy = (passport: any) => {
   );
 };
 
-export default initializeOutlookStrategy;
+export default initializeAzureAdStrategy;

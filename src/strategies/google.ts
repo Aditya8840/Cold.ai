@@ -1,5 +1,6 @@
 import { Strategy as GoogleStrategy, VerifyCallback } from 'passport-google-oauth20';
 import config from '../config';
+import logger from '../utils/logger';
 
 const initializeGoogleStrategy = (passport: any) => {
   passport.use(
@@ -23,6 +24,7 @@ const initializeGoogleStrategy = (passport: any) => {
             refreshToken,
             profile,
           };
+          console.log('Google Auth Callback User:'+user.toString());
           done(null, user);
         } catch (error) {
           done(error, undefined);
@@ -30,6 +32,14 @@ const initializeGoogleStrategy = (passport: any) => {
       }
     )
   );
+  passport.serializeUser((user: any, done: any) => {
+    console.log('Serializing user:'+user.toString());
+    done(null, user);
+  });
+  passport.deserializeUser((user: any, done: any) => {
+    console.log('deserializing user:'+user.toString());
+    done(null, user);
+  });
 };
 
 export default initializeGoogleStrategy;
