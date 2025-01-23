@@ -2,26 +2,19 @@ import { google, gmail_v1 } from "googleapis";
 import { Queue } from "bullmq";
 import { connection } from "../db/redis";
 import logger from "../utils/logger";
-import OpenaiService from "./openai";
+import GroqService from "./groq";
 import User from "../types/user";
 
-type LabelCategory = "Interested" | "Not interested" | "More information";
 
 class EmailService {
   private gmailClient: gmail_v1.Gmail | null = null;
   private emailQueue: Queue;
-  private openaiService: OpenaiService;
+  private groqService: GroqService;
   private user: User;
 
-  private labelMapping = {
-    Interested: "Label_3035777443514222121",
-    "Not interested": "Label_5649682475137114370",
-    "More information": "Label_5331249162142973886",
-  };
-
-  constructor(user: User, openaiService: OpenaiService) {
+  constructor(user: User, groqService: GroqService) {
     this.user = user;
-    this.openaiService = openaiService;
+    this.groqService = groqService;
     this.emailQueue = new Queue("emailQueue", { connection });
     this.initializeGmailClient(user.accessToken);
     this.scheduleCheckUnreadEmails();
@@ -35,10 +28,14 @@ class EmailService {
   }
 
   private async scheduleCheckUnreadEmails() {
+    const jobId = `checkUnreadEmails:${this.user.id}`;
     await this.emailQueue.add(
       "checkUnreadEmails",
       { userId: this.user.id },
-      { delay: 60000 }
+      {
+        delay: 60000,
+        jobId,
+      }
     );
     logger.info(`Scheduled 'checkUnreadEmails' job for user: ${this.user.id}`);
   }
@@ -56,6 +53,25 @@ class EmailService {
         userId: this.user.id,
         messageId: message.id,
       });
+    }
+  }
+
+  private async getLabelId(labelName: string): Promise<string | null | undefined> {
+    try {
+      const res = await this.gmailClient!.users.labels.list({ userId: "me" });
+      const labels = res.data.labels || [];
+      const label = labels.find((l) => l.name === labelName);
+
+      if (label) {
+        logger.info(`Label "${labelName}" found with ID: ${label.id}`);
+        return label.id;
+      } else {
+        logger.warn(`Label "${labelName}" not found.`);
+        return null;
+      }
+    } catch (error: any) {
+      logger.error("Error fetching labels:", error.message);
+      throw error;
     }
   }
 
@@ -144,24 +160,24 @@ class EmailService {
       emailContent: string;
     }
   ) {
-    const summary = await this.openaiService.analyzeEmailContext(
+    const summary = await this.groqService.analyzeEmailContext(
       emailData.emailContent
     );
     logger.info(`Email summary: ${summary}`);
 
-    const category = await this.openaiService.categorizeEmailContent(
+    const category = await this.groqService.categorizeEmailContent(
       emailData.emailContent
     );
     logger.info(`Email category: ${category}`);
 
-    const labelId = this.labelMapping[category as LabelCategory] || null;
+    const labelId = await this.getLabelId(category);
     if (labelId) {
       await this.assignLabelToEmail(messageId, labelId);
     } else {
       logger.warn(`No label found for category: ${category}`);
     }
 
-    const reply = await this.openaiService.generateEmailReply(
+    const reply = await this.groqService.generateEmailReply(
       emailData.emailContent
     );
     logger.info(`Email reply: ${reply}`);

@@ -42,7 +42,7 @@ class GroqService {
           {
             role: "system",
             content:
-              "Categorize this email content into one of the following categories: Interested, Not Interested, More information. Please answer using only these words.",
+              "Categorize this email content into one of the following categories: Interested, Not interested, More information. Please answer using only these exact words.",
           },
           { role: "user", content: emailContent },
         ],
@@ -68,7 +68,7 @@ class GroqService {
           {
             role: "system",
             content:
-              "Generate an appropriate reply for the following email content. Return only the reply message.",
+              "Generate an appropriate reply for the following email content. If the recipient's name is provided, use it; otherwise, do not include a placeholder for the name. Return only the reply message.",
           },
           { role: "user", content: emailContent },
         ],

@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger";
 import EmailService from "../services/email";
-import OpenaiService from "../services/openai";
+import GroqService from "../services/groq";
 import userStore from "../utils/userStore";
 import { v4 as uuidv4 } from "uuid";
 
-const openaiService = new OpenaiService();
+const groqService = new GroqService();
 
 export const googleAuthCallback = async (
   req: Request,
@@ -26,7 +26,7 @@ export const googleAuthCallback = async (
 
     userStore.addUser(userDetails);
     logger.info(`User ${userId} added to UserStore.`);
-    new EmailService(userDetails, openaiService);
+    new EmailService(userDetails, groqService);
 
     res.redirect("/");
   } catch (error) {
@@ -54,7 +54,7 @@ export const outlookAuthCallback = async (
 
     userStore.addUser(userDetails);
     logger.info(`User ${userId} added to UserStore.`);
-    new EmailService(userDetails, openaiService);
+    new EmailService(userDetails, groqService);
 
     res.redirect("/");
   } catch (error) {

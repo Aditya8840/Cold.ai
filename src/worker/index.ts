@@ -1,12 +1,12 @@
 import { Worker, Job, Queue } from "bullmq";
 import logger from "../utils/logger";
-import OpenaiService from "../services/openai";
+import GroqService from "../services/groq";
 import EmailService from "../services/email";
 import redisClient, { connection } from "../db/redis";
 import User from "../types/user";
 import userStore from "../utils/userStore";
 
-const openaiService = new OpenaiService();
+const groqService = new GroqService();
 const emailQueue = new Queue("emailQueue", { connection });
 
 const emailWorker = new Worker(
@@ -20,7 +20,7 @@ const emailWorker = new Worker(
       return;
     }
 
-    const emailService = new EmailService(user, openaiService);
+    const emailService = new EmailService(user, groqService);
 
     switch (job.name) {
       case "checkUnreadEmails":
