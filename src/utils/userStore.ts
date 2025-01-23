@@ -1,8 +1,8 @@
-import redisClient from '../db/redis';
-import { User } from '../types/user';
+import redisClient from "../db/redis";
+import User from "../types/user";
 
 class UserStore {
-  private prefix: string = 'user:';
+  private prefix: string = "user:";
 
   async addUser(user: User): Promise<void> {
     const key = `${this.prefix}${user.id}`;
@@ -22,7 +22,6 @@ class UserStore {
     const key = `${this.prefix}${userId}`;
     await redisClient.delete(key);
   }
-
 }
 
 const userStore = new UserStore();

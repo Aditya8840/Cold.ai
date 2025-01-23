@@ -1,7 +1,6 @@
-export interface User {
-    id: string;
-    accessToken: string;
-    refreshToken: string;
-    profile: any;
-  }
-  
+export default interface User {
+  id: string;
+  accessToken: string;
+  refreshToken: string;
+  profile: any;
+}

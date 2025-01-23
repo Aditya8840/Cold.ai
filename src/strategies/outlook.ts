@@ -1,5 +1,5 @@
-import { OIDCStrategy, VerifyCallback } from 'passport-azure-ad';
-import config from '../config';
+import { OIDCStrategy, VerifyCallback } from "passport-azure-ad";
+import config from "../config";
 
 const initializeAzureAdStrategy = (passport: any) => {
   passport.use(
@@ -10,15 +10,15 @@ const initializeAzureAdStrategy = (passport: any) => {
         clientSecret: config.outlook.clientSecret,
         allowHttpForRedirectUrl: true,
         redirectUrl: config.outlook.redirectUri,
-        responseType: 'code',
-        responseMode: 'query',
+        responseType: "code",
+        responseMode: "query",
         scope: [
-          'openid',
-          'profile',
-          'offline_access',
-          'https://graph.microsoft.com/Mail.Read',
-          'https://graph.microsoft.com/Mail.Send',
-          'User.Read'
+          "openid",
+          "profile",
+          "offline_access",
+          "https://graph.microsoft.com/Mail.Read",
+          "https://graph.microsoft.com/Mail.Send",
+          "User.Read",
         ],
         passReqToCallback: true,
       },
@@ -33,7 +33,7 @@ const initializeAzureAdStrategy = (passport: any) => {
       ) => {
         try {
           if (!profile) {
-            return done(new Error('No profile found')); 
+            return done(new Error("No profile found"));
           }
 
           const user = {
@@ -44,7 +44,7 @@ const initializeAzureAdStrategy = (passport: any) => {
 
           done(null, user);
         } catch (error) {
-          console.error('Error during Outlook OAuth validation:', error);
+          console.error("Error during Outlook OAuth validation:", error);
           done(error, null);
         }
       }
