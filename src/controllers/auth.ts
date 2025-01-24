@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger";
 import EmailService from "../services/email";
 import GroqService from "../services/groq";
+import OutlookService from "../services/outlook";
 import userStore from "../utils/userStore";
 import { v4 as uuidv4 } from "uuid";
 
@@ -54,7 +55,7 @@ export const outlookAuthCallback = async (
 
     userStore.addUser(userDetails);
     logger.info(`User ${userId} added to UserStore.`);
-    new EmailService(userDetails, groqService);
+    new OutlookService(userDetails, groqService);
 
     res.redirect("/");
   } catch (error) {

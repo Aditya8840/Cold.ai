@@ -5,6 +5,7 @@ import EmailService from "../services/email";
 import redisClient, { connection } from "../db/redis";
 import User from "../types/user";
 import userStore from "../utils/userStore";
+import OutlookService from "../services/outlook";
 
 const groqService = new GroqService();
 const emailQueue = new Queue("emailQueue", { connection });
@@ -21,11 +22,23 @@ const emailWorker = new Worker(
     }
 
     const emailService = new EmailService(user, groqService);
+    const outlookServices = new OutlookService(user, groqService);
 
     switch (job.name) {
       case "checkUnreadEmails":
         try {
           await emailService.checkUnreadEmails();
+        } catch (error) {
+          logger.error(
+            `Error checking unread emails for user ${userId}:`,
+            error
+          );
+        }
+        break;
+
+      case "checkUnreadOutlookEmails":
+        try {
+          await outlookServices.checkUnreadEmails();
         } catch (error) {
           logger.error(
             `Error checking unread emails for user ${userId}:`,
@@ -42,6 +55,25 @@ const emailWorker = new Worker(
         try {
           logger.info(`Processing email: ${messageId} for user: ${userId}`);
           const emailData = await emailService.getEmailData(messageId);
+          if (emailData) {
+            await emailService.processIncomingEmail(messageId, emailData);
+          }
+        } catch (error) {
+          logger.error(
+            `Error processing email ${messageId} for user ${userId}:`,
+            error
+          );
+        }
+        break;
+
+      case "processOutlookEmail":
+        if (!messageId) {
+          logger.error("No messageId provided for processEmail job.");
+          return;
+        }
+        try {
+          logger.info(`Processing email: ${messageId} for user: ${userId}`);
+          const emailData = await outlookServices.getMessage(messageId);
           if (emailData) {
             await emailService.processIncomingEmail(messageId, emailData);
           }
