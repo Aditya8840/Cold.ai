@@ -33,7 +33,7 @@ class EmailService {
       "checkUnreadEmails",
       { userId: this.user.id },
       {
-        delay: 60000,
+        repeat: { every: 60000 },
         jobId,
       }
     );
